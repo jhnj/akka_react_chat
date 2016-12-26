@@ -1,4 +1,4 @@
-@(webJarAssets: WebJarAssets)
+@(webJarAssets: WebJarAssets)(implicit request: play.api.mvc.RequestHeader)
 @*
  * Call the `main` template with two arguments. The first
  * argument is a `String` with the title of the page, the second
@@ -8,8 +8,9 @@
     <h1>Skeleton</h1>
     <script>
         const user = prompt("username?")
-        console.log('got here')
-        const socket = new WebSocket('ws://localhost:9000/socket')
+        const wsUrl = $('body').data('websocket_url')
+
+        const socket = new WebSocket(wsUrl)
 
         socket.onmessage = (event) => console.log('message received')
         socket.onopen = (event) => {

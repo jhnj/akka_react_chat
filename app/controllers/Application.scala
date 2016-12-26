@@ -21,7 +21,7 @@ class Application @Inject()(webJarAssets: WebJarAssets, system: ActorSystem, mat
     Ok(views.html.index(webJarAssets))
   }
 
-  def socket: WebSocket = WebSocket.accept[String, String] { request =>
+  def socket: WebSocket = WebSocket.accept[String, String] { implicit request =>
     ActorFlow.actorRef(out => UserSocket.props(out, chatRoomActor))
   }
 
