@@ -12,9 +12,18 @@
 
         const socket = new WebSocket(wsUrl)
 
-        socket.onmessage = (event) => console.log('message received')
+        socket.onmessage = (event) => {
+            console.log(event)
+            const msg = JSON.parse(event.data)
+            console.log(msg)
+            console.log(msg.text)
+        }
         socket.onopen = (event) => {
-            socket.send('test')
+            socket.send(JSON.stringify({
+                channel: 'test',
+                user: user,
+                text: 'testtext'
+            }))
         }
 
 

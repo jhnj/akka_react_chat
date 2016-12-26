@@ -1,6 +1,6 @@
 package controllers
 
-import actors.{ChatRoom, UserSocket}
+import actors.{ChatRoom, Message, UserSocket}
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.stream.Materializer
 import com.google.inject.{Inject, Singleton}
@@ -21,7 +21,7 @@ class Application @Inject()(webJarAssets: WebJarAssets, system: ActorSystem, mat
     Ok(views.html.index(webJarAssets))
   }
 
-  def socket: WebSocket = WebSocket.accept[String, String] { implicit request =>
+  def socket: WebSocket = WebSocket.accept[JsValue, JsValue] { implicit request =>
     ActorFlow.actorRef(out => UserSocket.props(out, chatRoomActor))
   }
 
