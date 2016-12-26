@@ -5,7 +5,9 @@
  * argument is an `Html` object containing the body of the page.
  *@
 @main("Welcome to Play") {
-    <h1>Skeleton</h1>
+    <div class="log"></div>
+    <input type="text" name="message" placeholder="message here">
+
     <script>
         const user = prompt("username?")
         const wsUrl = $('body').data('websocket_url')
@@ -15,16 +17,22 @@
         socket.onmessage = (event) => {
             console.log(event)
             const msg = JSON.parse(event.data)
-            console.log(msg)
-            console.log(msg.text)
+            $('.log').append("<div>" + msg.user + ": " + msg.message + "</div>")
         }
         socket.onopen = (event) => {
-            socket.send(JSON.stringify({
-                channel: 'test',
-                user: user,
-                text: 'testtext'
-            }))
+            console.log('socket open')
         }
+
+        $('input').on('keyup', function(e) {
+            if (e.keyCode != 13)
+                return
+
+            const msg = { channel: 'channel', user: user, message: this.value };
+            this.value = ''
+
+            socket.send(JSON.stringify(msg))
+
+        })
 
 
     </script>

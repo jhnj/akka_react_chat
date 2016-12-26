@@ -11,7 +11,7 @@ class UserSocket(out: ActorRef, room: ActorRef) extends Actor{
     case js: JsValue =>
       js.validate[Message]
         .map(msg => {
-          println(msg.text)
+          println(msg.message)
           out ! Json.toJson(msg)
         })
 

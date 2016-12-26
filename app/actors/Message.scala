@@ -5,7 +5,7 @@ import play.api.libs.json.{JsValue, Json, Reads, Writes}
 /**
   * Created by johan on 26/12/16.
   */
-case class Message(channel: String, user: String, text: String)
+case class Message(channel: String, user: String, message: String)
 
 object Message {
   implicit val messageWrites: Writes[Message] = new Writes[Message]{
@@ -13,7 +13,7 @@ object Message {
       Json.obj(
         "channel" -> message.channel,
         "user" -> message.user,
-        "text" -> message.text
+        "message" -> message.message
       )
     }
   }
