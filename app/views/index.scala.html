@@ -6,4 +6,16 @@
  *@
 @main("Welcome to Play") {
     <h1>Skeleton</h1>
+    <script>
+        const user = prompt("username?")
+        console.log('got here')
+        const socket = new WebSocket('ws://localhost:9000/socket')
+
+        socket.onmessage = (event) => console.log('message received')
+        socket.onopen = (event) => {
+            socket.send('test')
+        }
+
+
+    </script>
 }(webJarAssets)
