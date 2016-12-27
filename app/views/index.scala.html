@@ -27,7 +27,7 @@
             if (e.keyCode != 13)
                 return
 
-            const msg = { channel: 'channel', user: user, message: this.value };
+            const msg = { channel: 'default', user: user, message: this.value };
             this.value = ''
 
             socket.send(JSON.stringify(msg))

@@ -26,6 +26,7 @@ object ChatRoom {
 
   def props = Props(new ChatRoom)
 }
+
 class ChatRoom extends Actor {
 
   private var channels = Map[String, Set[ActorRef]]().withDefaultValue(Set.empty)
@@ -59,8 +60,6 @@ class ChatRoom extends Actor {
       channels.map {
         case (channel, subscribers) => channel -> (subscribers - subscriber)
       }
-
-    case _ => println("chatroom")
   }
 
 }
