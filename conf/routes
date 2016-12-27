@@ -4,6 +4,7 @@
 
 # Chat home
 GET     /                           controllers.Application.index
+GET     /login                      controllers.Application.login
 
 GET     /socket                     controllers.Application.socket
 

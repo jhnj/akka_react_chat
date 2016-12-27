@@ -7,7 +7,7 @@ import play.api.libs.json.{JsString, JsValue, Json}
 /**
   * Created by johan on 26/12/16.
   */
-class UserSocket(out: ActorRef, room: ActorRef) extends Actor{
+class UserSocket(out: ActorRef, room: ActorRef, uid: String) extends Actor{
 
   // subscribe to the default channel on creation
   room ! Subscribe("default", self)
@@ -16,7 +16,7 @@ class UserSocket(out: ActorRef, room: ActorRef) extends Actor{
     case js: JsValue =>
       js.validate[Message]
         .map(msg => {
-          room ! Publish(msg.channel, msg.message, Some(msg.user))
+          room ! Publish(msg.channel, msg.message, Some(uid))
         })
 
     case m: Message =>
@@ -28,5 +28,5 @@ class UserSocket(out: ActorRef, room: ActorRef) extends Actor{
 
 
 object UserSocket {
-  def props(out: ActorRef, room: ActorRef) = Props(classOf[UserSocket], out, room)
+  def props(out: ActorRef, room: ActorRef, uid: String) = Props(classOf[UserSocket], out, room, uid)
 }

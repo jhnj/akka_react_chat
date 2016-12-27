@@ -9,8 +9,7 @@
     <input type="text" name="message" placeholder="message here">
 
     <script>
-        const user = prompt("username?")
-        const wsUrl = $('body').data('websocket_url')
+         const wsUrl = $('body').data('websocket_url')
 
         const socket = new WebSocket(wsUrl)
 
@@ -27,7 +26,7 @@
             if (e.keyCode != 13)
                 return
 
-            const msg = { channel: 'default', user: user, message: this.value };
+            const msg = { channel: 'default', user: "notused", message: this.value };
             this.value = ''
 
             socket.send(JSON.stringify(msg))
