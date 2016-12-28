@@ -51,7 +51,9 @@ class Application @Inject()(webJarAssets: WebJarAssets, system: ActorSystem, mat
 
 
   def index: Action[AnyContent] = Action { implicit req =>
-    Ok(views.html.chat(webJarAssets))
+    req.session.get("userName").map ( user =>
+      Ok(views.html.chat(webJarAssets)(user))
+    ).getOrElse(Redirect(routes.Application.login()))
   }
 
   def socket: WebSocket = WebSocket.acceptOrResult[JsValue, JsValue] { implicit request =>

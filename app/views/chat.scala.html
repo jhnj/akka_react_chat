@@ -1,10 +1,11 @@
-@(webJarAssets: WebJarAssets)(implicit request: play.api.mvc.RequestHeader)
+@(webJarAssets: WebJarAssets)(userName: String)(implicit request: play.api.mvc.RequestHeader)
 @*
  * Call the `main` template with two arguments. The first
  * argument is a `String` with the title of the page, the second
  * argument is an `Html` object containing the body of the page.
  *@
 @main("Welcome to Play") {
+    <p>Username: @userName</p>
     <div class="log"></div>
     <input type="text" name="message" placeholder="message here">
     <a href="@routes.Application.logout()">logout</a>
