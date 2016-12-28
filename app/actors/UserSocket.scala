@@ -12,6 +12,7 @@ import play.api.libs.json._
 class UserSocket(out: ActorRef, room: ActorRef, uid: String) extends Actor{
 
   var channel: Option[String] = None
+  room ! NewUser
 
   def receive: PartialFunction[Any, Unit] = {
     case js: JsValue =>

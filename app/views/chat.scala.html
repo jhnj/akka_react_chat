@@ -49,7 +49,6 @@
             socket.send(JSON.stringify(msg))
 
         })
-
         function subscribe(channel) {
              const subscribe = { type: 'subscribe', channel: channel}
              socket.send(JSON.stringify(subscribe))

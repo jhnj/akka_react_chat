@@ -12,6 +12,8 @@ import akka.actor.{Actor, ActorRef, Props, Terminated}
   * prop method to create a ChatRoom actor
   */
 object ChatRoom {
+  case object NewUser
+
   case class Publish(channel: String, message: String, user: Option[String] = None)
   case class Published(publish: Publish)
 
@@ -32,11 +34,12 @@ object ChatRoom {
 class ChatRoom extends Actor {
 
   private var channels = Map[String, Set[ActorRef]]().withDefaultValue(Set.empty)
+  private var users: Set[ActorRef] = Set[ActorRef]()
 
   def receive: PartialFunction[Any, Unit] = {
     case p @ Publish(channel, message, user) =>
       channels(channel).foreach(c => {
-        c ! new ClientMessage(message, user.getOrElse("system"))
+        c ! ClientMessage(message, user.getOrElse("system"))
       })
       sender() ! Published(p)
 
@@ -44,7 +47,12 @@ class ChatRoom extends Actor {
       sender() ! AlreadySubscribed(s)
 
     case s @ Subscribe(channel, subscriber) =>
-      channels += channel -> (channels(channel) + subscriber)
+      if (!channels.contains(channel)) {
+        channels += channel -> (channels(channel) + subscriber)
+        users.foreach(u => u ! ClientChannels(channels.keys.toSeq))
+      } else {
+        channels += channel -> (channels(channel) + subscriber)
+      }
       context.watch(subscriber)
       sender() ! Subscribed(s)
 
@@ -65,6 +73,9 @@ class ChatRoom extends Actor {
 
     case ChannelList =>
       sender() ! ClientChannels(channels.keys.toSeq)
+
+    case NewUser =>
+      users += sender()
   }
 
 }
