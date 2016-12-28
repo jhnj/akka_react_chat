@@ -7,6 +7,7 @@
 @main("Welcome to Play") {
     <div class="log"></div>
     <input type="text" name="message" placeholder="message here">
+    <a href="@routes.Application.logout()">logout</a>
 
     <script>
          const wsUrl = $('body').data('websocket_url')

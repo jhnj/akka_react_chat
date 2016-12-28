@@ -44,6 +44,10 @@ class Application @Inject()(webJarAssets: WebJarAssets, system: ActorSystem, mat
     Ok(views.html.login(nameForm)(webJarAssets))
   }
 
+  def logout = Action { implicit req =>
+    Redirect(routes.Application.login()).withNewSession
+  }
+
 
 
   def index: Action[AnyContent] = Action { implicit req =>
