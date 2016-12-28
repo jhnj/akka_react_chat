@@ -1,6 +1,7 @@
 package actors
 
 import actors.ChatRoom._
+import actors.UserSocket.ClientMessage
 import akka.actor.{Actor, ActorRef, Props, Terminated}
 
 /**
@@ -34,7 +35,7 @@ class ChatRoom extends Actor {
   def receive: PartialFunction[Any, Unit] = {
     case p @ Publish(channel, message, user) =>
       channels(channel).foreach(c => {
-        c ! new Message(channel, user.getOrElse("system"), message)
+        c ! new ClientMessage(message, user.getOrElse("system"))
       })
       sender() ! Published(p)
 

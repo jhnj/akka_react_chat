@@ -1,6 +1,6 @@
 package controllers
 
-import actors.{ChatRoom, Message, UserSocket}
+import actors.{ChatRoom, UserSocket}
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.stream.Materializer
 import com.google.inject.{Inject, Singleton}
