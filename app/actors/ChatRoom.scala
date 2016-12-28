@@ -1,7 +1,7 @@
 package actors
 
 import actors.ChatRoom._
-import actors.UserSocket.ClientMessage
+import actors.UserSocket.{ClientChannels, ClientMessage}
 import akka.actor.{Actor, ActorRef, Props, Terminated}
 
 /**
@@ -24,6 +24,7 @@ object ChatRoom {
   case class NotSubscribed(unSubscribe: UnSubscribe)
 
   case class GetSubscribers(channel: String)
+  case object ChannelList
 
   def props = Props(new ChatRoom)
 }
@@ -61,6 +62,9 @@ class ChatRoom extends Actor {
       channels.map {
         case (channel, subscribers) => channel -> (subscribers - subscriber)
       }
+
+    case ChannelList =>
+      sender() ! ClientChannels(channels.keys.toSeq)
   }
 
 }

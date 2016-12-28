@@ -10,16 +10,30 @@
     <input type="text" name="message" placeholder="message here">
     <a href="@routes.Application.logout()">logout</a>
     <button type="button" onclick="subscribe('test')">subscribe</button>
+    <br>
+    <div class="channels"></div>
 
     <script>
          const wsUrl = $('body').data('websocket_url')
 
         const socket = new WebSocket(wsUrl)
 
+         function receive(message) {
+             const actions = {
+                 'message': (msg) => $('.log').append("<div>" + msg.user + ": " + msg.message + "</div>"),
+                 'channels': (msg) => {
+                     $('.channels').html(msg.channels.map((channel) => {
+                         return '<p>' + channel + '</p>'
+                     }));
+                 }
+             }
+             return actions[message.type](message)
+         }
+
         socket.onmessage = (event) => {
             console.log(event)
             const msg = JSON.parse(event.data)
-            $('.log').append("<div>" + msg.user + ": " + msg.message + "</div>")
+            receive(msg)
         }
         socket.onopen = (event) => {
             console.log('socket open')
