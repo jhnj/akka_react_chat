@@ -5,6 +5,7 @@
 # Chat home
 GET     /                           controllers.Application.index
 GET     /login                      controllers.Application.login
+POST    /username                   controllers.Application.userName
 
 GET     /socket                     controllers.Application.socket
 

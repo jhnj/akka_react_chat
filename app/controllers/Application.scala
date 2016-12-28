@@ -4,6 +4,8 @@ import actors.{ChatRoom, Message, UserSocket}
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.stream.Materializer
 import com.google.inject.{Inject, Singleton}
+import play.api.data._
+import play.api.data.Forms._
 import play.api.libs.json.JsValue
 import play.api.libs.streams.ActorFlow
 import play.api.mvc._
@@ -19,18 +21,37 @@ class Application @Inject()(webJarAssets: WebJarAssets, system: ActorSystem, mat
 
   val chatRoomActor: ActorRef = system.actorOf(Props[ChatRoom], "chatroom")
 
-  var userID = 0
-  def login = Action { req =>
-    userID += 1
-    Redirect(routes.Application.index()).withSession(req.session + ("user" -> s"default$userID"))
+  val nameForm = Form(
+    single(
+      "userName" -> text
+    )
+  )
+
+  def userName = Action { implicit req =>
+    nameForm.bindFromRequest.fold(
+      formWithErrors => {
+        BadRequest(views.html.login(nameForm)(webJarAssets))
+      },
+      userName => {
+        Redirect(routes.Application.index())
+          .withSession(req.session + ("userName" -> userName))
+      }
+    )
   }
 
+
+  def login = Action { implicit req =>
+    Ok(views.html.login(nameForm)(webJarAssets))
+  }
+
+
+
   def index: Action[AnyContent] = Action { implicit req =>
-    Ok(views.html.index(webJarAssets))
+    Ok(views.html.chat(webJarAssets))
   }
 
   def socket: WebSocket = WebSocket.acceptOrResult[JsValue, JsValue] { implicit request =>
-    Future.successful(request.session.get("user") match {
+    Future.successful(request.session.get("userName") match {
       case None => Left(Forbidden)
       case Some(user) =>
         Right(ActorFlow.actorRef(out => UserSocket.props(out, chatRoomActor, user)))
