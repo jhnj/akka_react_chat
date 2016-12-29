@@ -66,6 +66,7 @@ class ChatRoom extends Actor {
       sender() ! channels(channel)
 
     case Terminated(subscriber) =>
+      users -= subscriber
       channels.map {
         case (channel, subscribers) => channel -> (subscribers - subscriber)
       }
