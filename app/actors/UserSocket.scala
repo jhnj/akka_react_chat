@@ -1,6 +1,6 @@
 package actors
 
-import actors.ChatRoom._
+import actors.ChatActor._
 import actors.UserSocket._
 import akka.actor.{Actor, ActorRef, Props}
 import play.api.libs.json._
@@ -9,10 +9,10 @@ import play.api.libs.json._
 /**
   * Created by johan on 26/12/16.
   */
-class UserSocket(out: ActorRef, room: ActorRef, uid: String) extends Actor{
+class UserSocket(out: ActorRef, chat: ActorRef, uid: String) extends Actor{
 
   var channel: Option[String] = None
-  room ! NewUser
+  chat ! NewUser
 
   def receive: PartialFunction[Any, Unit] = {
     case js: JsValue =>
@@ -22,16 +22,16 @@ class UserSocket(out: ActorRef, room: ActorRef, uid: String) extends Actor{
           (js \ "channel").asOpt[String]
             .foreach { ch =>
               // Unsubscribe from old channel
-              channel.foreach(room ! UnSubscribe(_, self))
+              channel.foreach(chat ! UnSubscribe(_, self))
               // Subscribe to new channel
               channel = Some(ch)
-              room ! Subscribe(ch, self)
+              chat ! Subscribe(ch, self)
             }
         // Sent message received from client
         case "message" =>
           (js \ "message").asOpt[String]
             .foreach { msg =>
-              channel.foreach(ch => room ! Publish(ch, msg, Some(uid)))
+              channel.foreach(ch => chat ! Publish(ch, msg, Some(uid)))
             }
       }
 
@@ -70,5 +70,5 @@ object UserSocket {
   }
 
 
-  def props(out: ActorRef, room: ActorRef, uid: String) = Props(classOf[UserSocket], out, room, uid)
+  def props(out: ActorRef, chat: ActorRef, uid: String) = Props(classOf[UserSocket], out, chat, uid)
 }

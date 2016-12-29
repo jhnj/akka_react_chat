@@ -1,0 +1,13 @@
+@(webJarAssets: WebJarAssets)(userName: String)(implicit request: play.api.mvc.RequestHeader)
+
+
+@main("React chat-app") {
+
+
+  <div id="chat-app"></div>
+
+  <script src="https://unpkg.com/react@@latest/dist/react.js"></script>
+  <script src="https://unpkg.com/react-dom@@latest/dist/react-dom.js"></script>
+  <script src="https://unpkg.com/babel-standalone@@6.15.0/babel.min.js"></script>
+  <script src="@routes.Assets.versioned("javascripts/chat.es6.jsx")" type="text/babel"></script>
+}(webJarAssets)

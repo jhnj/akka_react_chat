@@ -1,6 +1,6 @@
 package actors
 
-import actors.ChatRoom._
+import actors.ChatActor._
 import actors.UserSocket.{ClientChannels, ClientMessage}
 import akka.actor.{Actor, ActorRef, Props, Terminated}
 
@@ -11,7 +11,7 @@ import akka.actor.{Actor, ActorRef, Props, Terminated}
   * Companion object for ChatRoom containing messages and
   * prop method to create a ChatRoom actor
   */
-object ChatRoom {
+object ChatActor {
   case object NewUser
 
   case class Publish(channel: String, message: String, user: Option[String] = None)
@@ -27,10 +27,10 @@ object ChatRoom {
 
   case class GetSubscribers(channel: String)
 
-  def props = Props(new ChatRoom)
+  def props = Props(new ChatActor)
 }
 
-class ChatRoom extends Actor {
+class ChatActor extends Actor {
 
   private var channels = Map[String, Set[ActorRef]]().withDefaultValue(Set.empty)
   private var users: Set[ActorRef] = Set[ActorRef]()

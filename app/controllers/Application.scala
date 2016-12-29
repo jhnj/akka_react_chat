@@ -1,6 +1,6 @@
 package controllers
 
-import actors.{ChatRoom, UserSocket}
+import actors.{ChatActor, UserSocket}
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.stream.Materializer
 import com.google.inject.{Inject, Singleton}
@@ -19,7 +19,7 @@ class Application @Inject()(webJarAssets: WebJarAssets, system: ActorSystem, mat
   implicit val implicitSystem: ActorSystem = system
   implicit val implicitMaterializer: Materializer = materializer
 
-  val chatRoomActor: ActorRef = system.actorOf(Props[ChatRoom], "chatroom")
+  val chatActor: ActorRef = system.actorOf(Props[ChatActor], "chatActor")
 
   val nameForm = Form(
     single(
@@ -60,9 +60,13 @@ class Application @Inject()(webJarAssets: WebJarAssets, system: ActorSystem, mat
     Future.successful(request.session.get("userName") match {
       case None => Left(Forbidden)
       case Some(user) =>
-        Right(ActorFlow.actorRef(out => UserSocket.props(out, chatRoomActor, user)))
+        Right(ActorFlow.actorRef(out => UserSocket.props(out, chatActor, user)))
     })
 
+  }
+
+  def test = Action { implicit req =>
+    Ok(views.html.react_chat(webJarAssets)("dank"))
   }
 
 }
