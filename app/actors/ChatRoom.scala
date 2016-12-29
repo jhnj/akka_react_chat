@@ -26,7 +26,6 @@ object ChatRoom {
   case class NotSubscribed(unSubscribe: UnSubscribe)
 
   case class GetSubscribers(channel: String)
-  case object ChannelList
 
   def props = Props(new ChatRoom)
 }
@@ -71,10 +70,8 @@ class ChatRoom extends Actor {
         case (channel, subscribers) => channel -> (subscribers - subscriber)
       }
 
-    case ChannelList =>
-      sender() ! ClientChannels(channels.keys.toSeq)
-
     case NewUser =>
+      sender() ! ClientChannels(channels.keys.toSeq)
       users += sender()
   }
 

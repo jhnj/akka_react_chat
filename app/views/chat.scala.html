@@ -7,11 +7,11 @@
 @main("Welcome to Play") {
     <p>Username: @userName</p>
     <div class="log"></div>
-    <input type="text" name="message" placeholder="message here">
+    <input class="message" type="text" name="message" placeholder="message here">
     <a href="@routes.Application.logout()">logout</a>
-    <button type="button" onclick="subscribe('test')">subscribe</button>
     <br>
     <div class="channels"></div>
+    <input class="newChannel" type="text" name="newChannel" placeholder="new channel">
 
     <script>
          const wsUrl = $('body').data('websocket_url')
@@ -23,7 +23,8 @@
                  'message': (msg) => $('.log').append("<div>" + msg.user + ": " + msg.message + "</div>"),
                  'channels': (msg) => {
                      $('.channels').html(msg.channels.map((channel) => {
-                         return '<p>' + channel + '</p>'
+                         return '<div class="channel"><p>' + channel + '</div>' + '<button type="button" onclick="subscribe(' +
+                                 "'" + channel + "'" + ')">subscribe</button>'
                      }));
                  }
              }
@@ -39,7 +40,7 @@
             console.log('socket open')
         }
 
-        $('input').on('keyup', function(e) {
+        $('input.message').on('keyup', function(e) {
             if (e.keyCode != 13)
                 return
 
@@ -49,6 +50,17 @@
             socket.send(JSON.stringify(msg))
 
         })
+
+         $('input.newChannel').on('keyup', function(e) {
+             if (e.keyCode != 13)
+                 return
+
+             subscribe(this.value)
+             this.value = ''
+
+         })
+
+
         function subscribe(channel) {
              const subscribe = { type: 'subscribe', channel: channel}
              socket.send(JSON.stringify(subscribe))

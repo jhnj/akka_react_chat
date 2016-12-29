@@ -21,9 +21,11 @@ class UserSocket(out: ActorRef, room: ActorRef, uid: String) extends Actor{
         case "subscribe" =>
           (js \ "channel").asOpt[String]
             .foreach { ch =>
+              // Unsubscribe from old channel
+              channel.foreach(room ! UnSubscribe(_, self))
+              // Subscribe to new channel
               channel = Some(ch)
               room ! Subscribe(ch, self)
-              room ! ChannelList
             }
         // Sent message received from client
         case "message" =>
