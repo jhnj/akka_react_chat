@@ -5,16 +5,17 @@ class ChatApp extends React.Component {
             messages: [{user: "user1", message: "message1"}, {user: "user2", message: "message2"}]
         };
         const name = "username";
-        const channel = "channelname";
+        const channel = "sub2";
         const notSubscribed = ["not1", "not2"]
         const subscribed = [{name: "sub1", lastMessage: "lmsg1"}, {name: "sub2", lastMessage: "lmsg2"}]
 
         return (
             <div className="row">
-                <div className="col-md-4">
-                    <div><ChannelList notSubscribed={notSubscribed} subscribed={subscribed}/></div>
+                <div className="col-xs-4">
+                    <div><ChannelList notSubscribed={notSubscribed} subscribed={subscribed} focus={channel}/></div>
                 </div>
-                <div className="col-md-8">
+                <div className="col-xs-8">
+                    <h3>{channel}</h3>
                     <div><MessageList data={data.messages}/></div>
                     <div><MessageBox /></div>
                 </div>
@@ -56,13 +57,23 @@ class MessageBox extends React.Component {
 
 class ChannelList extends React.Component {
     render() {
+
         const notSubscribed = this.props.notSubscribed.map((ns) => {
             return <NotSubscribed name={ns} key={ns} />
         })
-        const subscribed = this.props.subscribed.map((s) => {
-            return <Subscribed name={s.name} lastMessage={s.lastMessage}/>
-        })
-        return <div id="channels">{notSubscribed}{subscribed}</div>
+
+        // List of subscribed channels. Channel in focus first
+        const subscribed = this.props.subscribed.reduce((chs, s) => {
+            const channel = <Subscribed name={s.name} lastMessage={s.lastMessage} focus={this.props.focus == s.name} key={s.name}/>
+            if (s.name != this.props.focus)
+                chs.push(channel)
+            else
+                chs.unshift(channel)
+            return chs
+        }, [])
+
+
+        return <div id="channels">{subscribed}{notSubscribed}</div>
     }
 }
 
@@ -75,7 +86,7 @@ class NotSubscribed extends React.Component {
 class Subscribed extends React.Component {
     render() {
         return (
-            <div>
+            <div className={this.props.focus ? "focus" : ""}>
                 <strong>{this.props.name}</strong><br/>
                 {this.props.lastMessage}
             </div>
@@ -85,7 +96,7 @@ class Subscribed extends React.Component {
 
 const element = (
     <div className="container">
-        <h1>Hello, world!</h1>
+        <h1 className="text-center">Chat app</h1>
         <ChatApp />
     </div>
 );
