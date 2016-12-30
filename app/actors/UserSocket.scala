@@ -39,7 +39,7 @@ class UserSocket(out: ActorRef, chat: ActorRef, uid: String) extends Actor{
         case "message" =>
           (js \ "message").asOpt[String]
             .foreach { msg =>
-              channels.foreach(ch => chat ! Publish(ch, msg, Some(uid)))
+              (js \ "channel").asOpt[String].foreach(ch => chat ! Publish(ch, msg, Some(uid)))
             }
       }
 

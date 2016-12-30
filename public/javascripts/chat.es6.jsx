@@ -19,6 +19,10 @@ class ChatApp extends React.Component {
             const msg = JSON.parse(event.data)
             this.receive(msg)
         }
+        this.sendMessage = (message) => {
+            console.log(this.socket)
+            this.socket.send(JSON.stringify( {type: 'message', channel: this.state.channel, message: message} ))
+        }
     }
 
     receive(message) {
@@ -40,8 +44,6 @@ class ChatApp extends React.Component {
     }
 
 
-
-
     render() {
 
         return (
@@ -53,7 +55,7 @@ class ChatApp extends React.Component {
                 <div className="col-xs-8">
                     <h3>{this.state.channel}</h3>
                     <div><MessageList data={this.state.messages}/></div>
-                    <div><MessageBox socket={this.socket}/></div>
+                    <div><MessageBox sendMessage={this.sendMessage}/></div>
                 </div>
             </div>
         )
@@ -82,11 +84,11 @@ class ChatMessage extends React.Component {
 
 class MessageBox extends React.Component {
     constructor(props) {
-        super(props)
-        this.state = {value: ""}
+        super(props);
+        this.state = {value: ''};
 
-        this.handleChange = this.handleChange.bind(this)
-        this.handleSubmit = this.handleSubmit.bind(this)
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     handleChange(event) {
@@ -95,6 +97,8 @@ class MessageBox extends React.Component {
 
     handleSubmit(event) {
         event.preventDefault();
+        this.props.sendMessage(this.state.value);
+        this.setState( { value: '' } )
     }
 
     render() {
@@ -102,7 +106,8 @@ class MessageBox extends React.Component {
         return (
             <form onSubmit={this.handleSubmit}>
                 <label>
-                    <textarea value={this.state.value} onChange={this.handleChange} />
+                    Name:
+                    <input type="text" value={this.state.value} onChange={this.handleChange} />
                 </label>
                 <input type="submit" value="Submit" />
             </form>
