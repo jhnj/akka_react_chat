@@ -38,7 +38,7 @@ class ChatActor extends Actor {
   def receive: PartialFunction[Any, Unit] = {
     case p @ Publish(channel, message, user) =>
       channels(channel).foreach(c => {
-        c ! ClientMessage(message, user.getOrElse("system"))
+        c ! ClientMessage(message, user.getOrElse("system"), channel)
       })
       sender() ! Published(p)
 

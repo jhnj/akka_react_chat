@@ -11,7 +11,7 @@ import play.api.libs.json._
   */
 class UserSocket(out: ActorRef, chat: ActorRef, uid: String) extends Actor{
 
-  var channel: Option[String] = None
+  var channels: Set[String] = Set()
   chat ! NewUser
 
   def receive: PartialFunction[Any, Unit] = {
@@ -21,17 +21,22 @@ class UserSocket(out: ActorRef, chat: ActorRef, uid: String) extends Actor{
         case "subscribe" =>
           (js \ "channel").asOpt[String]
             .foreach { ch =>
-              // Unsubscribe from old channel
-              channel.foreach(chat ! UnSubscribe(_, self))
               // Subscribe to new channel
-              channel = Some(ch)
+              channels += ch
               chat ! Subscribe(ch, self)
+            }
+
+        case "unsubscribe" =>
+          (js \ "channel").asOpt[String]
+            .foreach { ch =>
+              channels -= ch
+              chat ! UnSubscribe(ch, self)
             }
         // Sent message received from client
         case "message" =>
           (js \ "message").asOpt[String]
             .foreach { msg =>
-              channel.foreach(ch => chat ! Publish(ch, msg, Some(uid)))
+              channels.foreach(ch => chat ! Publish(ch, msg, Some(uid)))
             }
       }
 
@@ -48,13 +53,14 @@ class UserSocket(out: ActorRef, chat: ActorRef, uid: String) extends Actor{
 
 object UserSocket {
 
-  case class ClientMessage(message: String, user: String)
+  case class ClientMessage(message: String, user: String, channel: String)
   implicit val clientMessageWrites: Writes[ClientMessage] = new Writes[ClientMessage] {
     override def writes(cm: ClientMessage): JsObject = {
       Json.obj(
         "type" -> "message",
         "message" -> cm.message,
-        "user" -> cm.user
+        "user" -> cm.user,
+        "channel" -> cm.channel
       )
     }
   }
