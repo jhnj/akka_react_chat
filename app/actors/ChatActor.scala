@@ -26,6 +26,7 @@ object ChatActor {
   case class NotSubscribed(unSubscribe: UnSubscribe)
 
   case class GetSubscribers(channel: String)
+  case class ChannelList(channels: Seq[String])
 
   def props = Props(new ChatActor)
 }
@@ -48,7 +49,7 @@ class ChatActor extends Actor {
     case s @ Subscribe(channel, subscriber) =>
       if (!channels.contains(channel)) {
         channels += channel -> (channels(channel) + subscriber)
-        users.foreach(u => u ! ClientChannels(channels.keys.toSeq))
+        users.foreach(u => u ! ChannelList(channels.keys.toSeq))
       } else {
         channels += channel -> (channels(channel) + subscriber)
       }
@@ -72,7 +73,7 @@ class ChatActor extends Actor {
       }
 
     case NewUser =>
-      sender() ! ClientChannels(channels.keys.toSeq)
+      sender() ! ChannelList(channels.keys.toSeq)
       users += sender()
   }
 

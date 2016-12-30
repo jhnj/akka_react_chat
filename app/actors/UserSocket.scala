@@ -11,7 +11,10 @@ import play.api.libs.json._
   */
 class UserSocket(out: ActorRef, chat: ActorRef, uid: String) extends Actor{
 
-  var channels: Set[String] = Set()
+  chat ! Subscribe("sub2", self)
+  chat ! Subscribe("notS", self)
+  chat ! Subscribe("sub1", self)
+  var channels: Set[String] = Set("sub2", "sub1")
   chat ! NewUser
 
   def receive: PartialFunction[Any, Unit] = {
@@ -43,8 +46,9 @@ class UserSocket(out: ActorRef, chat: ActorRef, uid: String) extends Actor{
     case m: ClientMessage =>
       out ! Json.toJson(m)
 
-    case chs: ClientChannels =>
-      out ! Json.toJson(chs)
+    case chs: ChannelList =>
+      val notSubscribed = chs.channels.filter(!this.channels.contains(_))
+      out ! Json.toJson(ClientChannels(channels, notSubscribed))
 
   }
 }
@@ -65,12 +69,13 @@ object UserSocket {
     }
   }
 
-  case class ClientChannels(channels: Seq[String])
+  case class ClientChannels(subscribed: Set[String], notSubscribed: Seq[String])
   implicit val clientChannelsWrites: Writes[ClientChannels] = new Writes[ClientChannels] {
     override def writes(chs: ClientChannels): JsObject = {
       Json.obj(
         "type" -> "channels",
-        "channels" -> chs.channels.map(ch => JsString(ch))
+        "subscribed" -> chs.subscribed.map(JsString(_)),
+        "notSubscribed" -> chs.notSubscribed.map(JsString(_))
       )
     }
   }

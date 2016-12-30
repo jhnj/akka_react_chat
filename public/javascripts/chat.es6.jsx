@@ -1,23 +1,59 @@
 
 class ChatApp extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            messages: [{user: "user1", message: "message1"}, {user: "user2", message: "message2"}],
+            username: "username",
+            channel: "sub2",
+            notSubscribed: [],
+            subscribed: {sub1: "lmsg1", sub2: "lmsg2"}
+        }
+    }
+
+    componentDidMount() {
+        const wsUrl = $('body').data('websocket_url')
+        this.socket = new WebSocket(wsUrl)
+        this.socket.onmessage = (event) => {
+            console.log(event)
+            const msg = JSON.parse(event.data)
+            this.receive(msg)
+        }
+    }
+
+    receive(message) {
+        const actions = {
+            'message': (msg) => {
+                this.setState({ messages: this.state.messages.concat(msg)})
+            },
+            'channels': (msg) => {
+                console.log(JSON.stringify(msg))
+                this.setState({ notSubscribed: msg.notSubscribed })
+                const subscribed = {}
+                msg.subscribed.forEach((ch) => {
+                    subscribed[ch] =  this.state.subscribed[ch] || ''
+                })
+                this.setState({ subscribed: subscribed })
+            }
+        }
+        return actions[message.type](message)
+    }
+
+
+
+
     render() {
-        const data = {
-            messages: [{user: "user1", message: "message1"}, {user: "user2", message: "message2"}]
-        };
-        const name = "username";
-        const channel = "sub2";
-        const notSubscribed = ["not1", "not2"]
-        const subscribed = [{name: "sub1", lastMessage: "lmsg1"}, {name: "sub2", lastMessage: "lmsg2"}]
 
         return (
             <div className="row">
                 <div className="col-xs-4">
-                    <div><ChannelList notSubscribed={notSubscribed} subscribed={subscribed} focus={channel}/></div>
+                    <div><ChannelList notSubscribed={this.state.notSubscribed}
+                                      subscribed={this.state.subscribed} focus={this.state.channel}/></div>
                 </div>
                 <div className="col-xs-8">
-                    <h3>{channel}</h3>
-                    <div><MessageList data={data.messages}/></div>
-                    <div><MessageBox /></div>
+                    <h3>{this.state.channel}</h3>
+                    <div><MessageList data={this.state.messages}/></div>
+                    <div><MessageBox socket={this.socket}/></div>
                 </div>
             </div>
         )
@@ -45,13 +81,32 @@ class ChatMessage extends React.Component {
 }
 
 class MessageBox extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {value: ""}
+
+        this.handleChange = this.handleChange.bind(this)
+        this.handleSubmit = this.handleSubmit.bind(this)
+    }
+
+    handleChange(event) {
+        this.setState({value: event.target.value});
+    }
+
+    handleSubmit(event) {
+        event.preventDefault();
+    }
+
     render() {
+
         return (
-            <div id="footer">
-                <input type="text" id="messageField" ref="text" placeholder="Say something" className="form-control" />
-                <input type="button" className="btn btn-primary" value="Submit" onClick="" />
-            </div>
-        )
+            <form onSubmit={this.handleSubmit}>
+                <label>
+                    <textarea value={this.state.value} onChange={this.handleChange} />
+                </label>
+                <input type="submit" value="Submit" />
+            </form>
+        );
     }
 }
 
@@ -62,31 +117,29 @@ class ChannelList extends React.Component {
             return <NotSubscribed name={ns} key={ns} />
         })
 
-        // List of subscribed channels. Channel in focus first
-        const subscribed = this.props.subscribed.reduce((chs, s) => {
-            const channel = <Subscribed name={s.name} lastMessage={s.lastMessage} focus={this.props.focus == s.name} key={s.name}/>
-            if (s.name != this.props.focus)
-                chs.push(channel)
-            else
-                chs.unshift(channel)
-            return chs
-        }, [])
 
-
+        const subscribed = Object.keys(this.props.subscribed).reduce((chs, name) => {
+                const channel = <Subscribed name={name} lastMessage={this.props.subscribed[name]} focus={this.props.focus == name} key={name}/>
+                if (name != this.props.focus)
+                    chs.push(channel)
+                else
+                    chs.unshift(channel)
+                return chs
+            }, [])
         return <div id="channels">{subscribed}{notSubscribed}</div>
     }
 }
 
 class NotSubscribed extends React.Component {
     render() {
-        return <div><strong>{this.props.name}</strong></div>
+        return <div className="panel panel-default">{this.props.name}</div>
     }
 }
 
 class Subscribed extends React.Component {
     render() {
         return (
-            <div className={this.props.focus ? "focus" : ""}>
+            <div className={(this.props.focus ? "focus" : "") + ' panel panel-default'}>
                 <strong>{this.props.name}</strong><br/>
                 {this.props.lastMessage}
             </div>
