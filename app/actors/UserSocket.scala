@@ -16,6 +16,7 @@ class UserSocket(out: ActorRef, chat: ActorRef, uid: String) extends Actor{
   chat ! Subscribe("sub1", self)
   var channels: Set[String] = Set("sub2", "sub1")
   chat ! NewUser
+  chat ! Publish("sub1", "notfocus")
 
   def receive: PartialFunction[Any, Unit] = {
     case js: JsValue =>

@@ -7,7 +7,7 @@ class ChatApp extends React.Component {
             username: "username",
             channel: "sub2",
             notSubscribed: [],
-            subscribed: {sub1: "lmsg1", sub2: "lmsg2"}
+            subscribed: {sub1: {user: "u1", message: "lmsg1"}, sub2: {user: "u2", message: "lmsg2"}}
         }
     }
 
@@ -17,7 +17,7 @@ class ChatApp extends React.Component {
         this.socket.onmessage = (event) => {
             console.log(event)
             const msg = JSON.parse(event.data)
-            this.receive(msg)
+            this.handle(msg)
         }
         this.sendMessage = (message) => {
             console.log(this.socket)
@@ -25,10 +25,10 @@ class ChatApp extends React.Component {
         }
     }
 
-    receive(message) {
+    handle(message) {
         const actions = {
             'message': (msg) => {
-                this.setState({ messages: this.state.messages.concat(msg)})
+                this.receive(msg.message, msg.channel, msg.user)
             },
             'channels': (msg) => {
                 console.log(JSON.stringify(msg))
@@ -41,6 +41,16 @@ class ChatApp extends React.Component {
             }
         }
         return actions[message.type](message)
+    }
+
+    receive(message, channel, user) {
+        if (channel === this.state.channel) {
+            this.setState({ messages: this.state.messages.concat( {user: user, message: message } )})
+        } else {
+            const tempSubscribed = this.state.subscribed
+            tempSubscribed[channel] = {user: user, message: message}
+            this.setState({ subscribed: tempSubscribed})
+        }
     }
 
 
@@ -124,7 +134,8 @@ class ChannelList extends React.Component {
 
 
         const subscribed = Object.keys(this.props.subscribed).reduce((chs, name) => {
-                const channel = <Subscribed name={name} lastMessage={this.props.subscribed[name]} focus={this.props.focus == name} key={name}/>
+                const channel = <Subscribed name={name} lastMessage={this.props.subscribed[name].message}
+                                            user={this.props.subscribed[name].user} focus={this.props.focus == name} key={name}/>
                 if (name != this.props.focus)
                     chs.push(channel)
                 else
@@ -146,7 +157,7 @@ class Subscribed extends React.Component {
         return (
             <div className={(this.props.focus ? "focus" : "") + ' panel panel-default'}>
                 <strong>{this.props.name}</strong><br/>
-                {this.props.lastMessage}
+                {this.props.user}: {this.props.lastMessage}
             </div>
         )
     }
