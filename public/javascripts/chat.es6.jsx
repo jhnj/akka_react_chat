@@ -5,7 +5,7 @@ class ChatApp extends React.Component {
         this.state = {
             messages: [{user: "user1", message: "message1"}, {user: "user2", message: "message2"}],
             username: "username",
-            channel: "sub2",
+            channel: null,
             notSubscribed: [],
             subscribed: {sub1: {user: "u1", message: "lmsg1"}, sub2: {user: "u2", message: "lmsg2"}}
         }
@@ -59,14 +59,16 @@ class ChatApp extends React.Component {
         }
     }
 
-    unsubscribe(channel) {
+    unsubscribe() {
+        const channel = this.state.channel
         this.socket.send( JSON.stringify( { type: "unsubscribe", channel: channel } ))
-        this.setState( { channel: "" } )
+        this.setState( { channel: null } )
         const newSubscribed = this.state.subscribed
         delete newSubscribed[channel]
         this.setState( {
             notSubscribed: this.state.notSubscribed.concat(channel),
-            subscribed: newSubscribed
+            subscribed: newSubscribed,
+            channel: null
         })
         console.log('unsubbing: ' + channel)
     }
@@ -96,15 +98,30 @@ class ChatApp extends React.Component {
                 <div className="col-xs-4">
                     <div><ChannelList notSubscribed={this.state.notSubscribed}
                                       subscribed={this.state.subscribed} channelInFocus={this.state.channel}
-                                      unsubscribe={this.unsubscribe} subscribe={this.subscribe} focus={this.focus}/></div>
+                                      subscribe={this.subscribe} focus={this.focus}/></div>
                 </div>
-                <div className="col-xs-8">
-                    <h3>{this.state.channel}</h3>
-                    <div><MessageList data={this.state.messages}/></div>
-                    <div><MessageBox sendMessage={this.sendMessage}/></div>
-                </div>
+                <Chat channel={this.state.channel} unsubscribe={this.unsubscribe}
+                      messages={this.state.messages} sendMessage={this.sendMessage} />
             </div>
         )
+    }
+}
+
+class Chat extends React.Component {
+    render() {
+        if (this.props.channel) {
+            return (
+                <div className="col-xs-8">
+                    <h3>{this.props.channel}</h3>
+                    <button onClick={this.props.unsubscribe}>Unsubscribe</button>
+                    <div><MessageList data={this.props.messages}/></div>
+                    <div><MessageBox sendMessage={this.props.sendMessage}/></div>
+                </div>
+            )
+        } else {
+            return <div>Select a channel</div>
+        }
+
     }
 }
 
@@ -173,7 +190,7 @@ class ChannelList extends React.Component {
         const subscribed = Object.keys(this.props.subscribed).reduce((chs, name) => {
                 const channel = <Subscribed name={name} lastMessage={this.props.subscribed[name].message}
                                             user={this.props.subscribed[name].user} isInFocus={this.props.channelInFocus == name}
-                                            unsubscribe={this.props.unsubscribe} focus={this.props.focus} key={name}/>
+                                            focus={this.props.focus} key={name}/>
                 if (name != this.props.channelInFocus)
                     chs.push(channel)
                 else
@@ -209,13 +226,10 @@ class Subscribed extends React.Component {
         super(props);
 
         // This binding is necessary to make `this` work in the callback
-        this.unsubscribe = this.unsubscribe.bind(this);
         this.focus = this.focus.bind(this);
     }
 
-    unsubscribe() {
-        this.props.unsubscribe(this.props.name)
-    }
+
 
     focus() {
         this.props.focus(this.props.name)
@@ -227,7 +241,6 @@ class Subscribed extends React.Component {
             <div onClick={this.focus} className={(this.props.isInFocus ? "focus" : "") + ' panel panel-default'}>
                 <strong>{this.props.name}</strong><br/>
                 {this.props.user}: {this.props.lastMessage}
-                <button onClick={this.unsubscribe}>Unsubscribe</button>
             </div>
         )
     }
