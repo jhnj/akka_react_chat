@@ -1,4 +1,3 @@
-Chat_app
-=================================
+# Akka React Chat
 
-Basic chat webapp using scala play with akka actors.
+Simple chat app built using React.js, Scala Play and Akka Actors.

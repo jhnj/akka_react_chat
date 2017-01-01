@@ -1,4 +1,4 @@
-name := """chat_app"""
+name := """akka_react_chat"""
 
 version := "1.0-SNAPSHOT"
 

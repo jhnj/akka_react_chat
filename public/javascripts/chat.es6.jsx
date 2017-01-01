@@ -14,6 +14,7 @@ class ChatApp extends React.Component {
         this.unsubscribe = this.unsubscribe.bind(this)
         this.subscribe = this.subscribe.bind(this)
         this.receive = this.receive.bind(this)
+        this.focus = this.focus.bind(this)
     }
 
     componentDidMount() {
@@ -79,6 +80,10 @@ class ChatApp extends React.Component {
         })
     }
 
+    focus(channel) {
+        this.setState( { channel: channel } )
+    }
+
 
     render() {
 
@@ -86,8 +91,8 @@ class ChatApp extends React.Component {
             <div className="row">
                 <div className="col-xs-4">
                     <div><ChannelList notSubscribed={this.state.notSubscribed}
-                                      subscribed={this.state.subscribed} focus={this.state.channel}
-                                      unsubscribe={this.unsubscribe} subscribe={this.subscribe}/></div>
+                                      subscribed={this.state.subscribed} channelInFocus={this.state.channel}
+                                      unsubscribe={this.unsubscribe} subscribe={this.subscribe} focus={this.focus}/></div>
                 </div>
                 <div className="col-xs-8">
                     <h3>{this.state.channel}</h3>
@@ -163,9 +168,9 @@ class ChannelList extends React.Component {
 
         const subscribed = Object.keys(this.props.subscribed).reduce((chs, name) => {
                 const channel = <Subscribed name={name} lastMessage={this.props.subscribed[name].message}
-                                            user={this.props.subscribed[name].user} focus={this.props.focus == name}
-                                            unsubscribe={this.props.unsubscribe} key={name}/>
-                if (name != this.props.focus)
+                                            user={this.props.subscribed[name].user} isInFocus={this.props.channelInFocus == name}
+                                            unsubscribe={this.props.unsubscribe} focus={this.props.focus} key={name}/>
+                if (name != this.props.channelInFocus)
                     chs.push(channel)
                 else
                     chs.unshift(channel)
@@ -200,18 +205,25 @@ class Subscribed extends React.Component {
         super(props);
 
         // This binding is necessary to make `this` work in the callback
-        this.handleClick = this.handleClick.bind(this);
+        this.unsubscribe = this.unsubscribe.bind(this);
+        this.focus = this.focus.bind(this);
     }
 
-    handleClick(event) {
+    unsubscribe(event) {
         this.props.unsubscribe(this.props.name)
     }
+
+    focus(event) {
+        this.props.focus(this.props.name)
+        console.log("focus")
+    }
+
     render() {
         return (
-            <div className={(this.props.focus ? "focus" : "") + ' panel panel-default'}>
+            <div onClick={this.focus} className={(this.props.isInFocus ? "focus" : "") + ' panel panel-default'}>
                 <strong>{this.props.name}</strong><br/>
                 {this.props.user}: {this.props.lastMessage}
-                <button onClick={this.handleClick}>Unsubscribe</button>
+                <button onClick={this.unsubscribe}>Unsubscribe</button>
             </div>
         )
     }
