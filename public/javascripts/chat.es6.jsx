@@ -61,6 +61,7 @@ class ChatApp extends React.Component {
 
     unsubscribe(channel) {
         this.socket.send( JSON.stringify( { type: "unsubscribe", channel: channel } ))
+        this.setState( { channel: "" } )
         const newSubscribed = this.state.subscribed
         delete newSubscribed[channel]
         this.setState( {
@@ -81,7 +82,10 @@ class ChatApp extends React.Component {
     }
 
     focus(channel) {
-        this.setState( { channel: channel } )
+        if (this.state.channel === channel)
+            this.setState({channel: ""})
+        else
+            this.setState({channel: channel})
     }
 
 
@@ -209,11 +213,11 @@ class Subscribed extends React.Component {
         this.focus = this.focus.bind(this);
     }
 
-    unsubscribe(event) {
+    unsubscribe() {
         this.props.unsubscribe(this.props.name)
     }
 
-    focus(event) {
+    focus() {
         this.props.focus(this.props.name)
         console.log("focus")
     }
