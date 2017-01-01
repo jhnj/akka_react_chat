@@ -12,7 +12,7 @@ class ChatApp extends React.Component {
 
         this.handle = this.handle.bind(this)
         this.unsubscribe = this.unsubscribe.bind(this)
-        // this.subscribe = this.subscribe.bind(this)
+        this.subscribe = this.subscribe.bind(this)
         this.receive = this.receive.bind(this)
     }
 
@@ -59,7 +59,7 @@ class ChatApp extends React.Component {
     }
 
     unsubscribe(channel) {
-        this.socket.send( JSON.stringify( {type: "unsubscribe", channel: channel} ))
+        this.socket.send( JSON.stringify( { type: "unsubscribe", channel: channel } ))
         const newSubscribed = this.state.subscribed
         delete newSubscribed[channel]
         this.setState( {
@@ -69,6 +69,16 @@ class ChatApp extends React.Component {
         console.log('unsubbing: ' + channel)
     }
 
+    subscribe(channel) {
+        this.socket.send(JSON.stringify( { type: "subscribe", channel: channel} ))
+        const newSubscribed = this.state.subscribed
+        newSubscribed[channel] = {user: "", message: ""}
+        this.setState( {
+            notSubscribed: this.state.notSubscribed.filter((ch) => ch !== channel),
+            subscribed: newSubscribed
+        })
+    }
+
 
     render() {
 
@@ -76,7 +86,8 @@ class ChatApp extends React.Component {
             <div className="row">
                 <div className="col-xs-4">
                     <div><ChannelList notSubscribed={this.state.notSubscribed}
-                                      subscribed={this.state.subscribed} focus={this.state.channel} unsubscribe={this.unsubscribe}/></div>
+                                      subscribed={this.state.subscribed} focus={this.state.channel}
+                                      unsubscribe={this.unsubscribe} subscribe={this.subscribe}/></div>
                 </div>
                 <div className="col-xs-8">
                     <h3>{this.state.channel}</h3>
@@ -146,7 +157,7 @@ class ChannelList extends React.Component {
     render() {
 
         const notSubscribed = this.props.notSubscribed.map((ns) => {
-            return <NotSubscribed name={ns} key={ns} />
+            return <NotSubscribed name={ns} key={ns} subscribe={this.props.subscribe}/>
         })
 
 
@@ -165,8 +176,22 @@ class ChannelList extends React.Component {
 }
 
 class NotSubscribed extends React.Component {
+    constructor(props) {
+        super(props);
+
+        // This binding is necessary to make `this` work in the callback
+        this.handleClick = this.handleClick.bind(this);
+    }
+
+    handleClick(event) {
+        this.props.subscribe(this.props.name)
+    }
+
     render() {
-        return <div className="panel panel-default">{this.props.name}</div>
+        return <div className="panel panel-default">
+            {this.props.name}
+            <button onClick={this.handleClick}>Subscribe</button>
+        </div>
     }
 }
 
