@@ -173,7 +173,6 @@ class MessageBox extends React.Component {
         return (
             <form onSubmit={this.handleSubmit}>
                 <label>
-                    Name:
                     <input type="text" value={this.state.value} onChange={this.handleChange} />
                 </label>
                 <input type="submit" value="Submit" />
@@ -183,6 +182,24 @@ class MessageBox extends React.Component {
 }
 
 class ChannelList extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {value: ''};
+
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    handleChange(event) {
+        this.setState({value: event.target.value});
+    }
+
+    handleSubmit(event) {
+        event.preventDefault();
+        this.props.subscribe(this.state.value);
+        this.setState( { value: '' } )
+    }
+
 
     render() {
 
@@ -201,7 +218,19 @@ class ChannelList extends React.Component {
                     chs.unshift(channel)
                 return chs
             }, [])
-        return <div id="channels">{subscribed}{notSubscribed}</div>
+        return (
+            <div>
+                <strong>New channel</strong>
+                <form onSubmit={this.handleSubmit}>
+                    <label>
+                        Name:
+                        <input type="text" value={this.state.value} onChange={this.handleChange} />
+                    </label>
+                    <input type="submit" value="Submit" />
+                </form>
+                <div>{subscribed}{notSubscribed}</div>
+            </div>
+        )
     }
 }
 
