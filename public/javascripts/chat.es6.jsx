@@ -35,7 +35,7 @@ class ChatApp extends React.Component {
         const actions = {
             'message': (msg) => {
                 if (msg.message && msg.channel && msg.user)
-                    this.receive(msg.message, msg.channel, msg.user)
+                    this.receive(msg.message, msg.channel, msg.sender)
             },
             'channels': (msg) => {
                 console.log(JSON.stringify(msg))
@@ -50,7 +50,8 @@ class ChatApp extends React.Component {
         return actions[message.type](message)
     }
 
-    receive(message, channel, user) {
+    receive(message, channel, sender) {
+        const user = this.props.username === sender ? "you" : sender
         if (channel === this.state.channel) {
             this.setState({messages: this.state.messages.concat({user: user, message: message})})
         }
@@ -86,9 +87,11 @@ class ChatApp extends React.Component {
 
     focus(channel) {
         if (this.state.channel === channel)
-            this.setState({channel: null})
+            this.setState( { channel: null } )
         else
-            this.setState({channel: channel})
+            this.setState( { channel: channel } )
+        // Empty messages when chaning channel
+        this.setState( { messages: []} )
     }
 
 
