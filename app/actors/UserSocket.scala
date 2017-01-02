@@ -14,6 +14,10 @@ class UserSocket(out: ActorRef, chat: ActorRef, uid: String) extends Actor{
 
   var channels: Set[String] = Set()
   chat ! NewUser(uid)
+  out ! Json.obj(
+    "type" -> "username",
+    "username" -> uid
+  )
 
   def receive: PartialFunction[Any, Unit] = {
     case js: JsValue =>

@@ -1,13 +1,13 @@
 
 class ChatApp extends React.Component {
     constructor(props) {
-        super(props);
+        super(props)
         this.state = {
             messages: [],
-            username: "username",
+            username: null,
             channel: null,
             notSubscribed: [],
-            subscribed: {}//sub1: {user: "u1", message: "lmsg1"}, sub2: {user: "u2", message: "lmsg2"}}
+            subscribed: {}
         }
 
         this.handle = this.handle.bind(this)
@@ -26,7 +26,6 @@ class ChatApp extends React.Component {
             this.handle(msg)
         }
         this.sendMessage = (message) => {
-            console.log(this.socket)
             this.socket.send(JSON.stringify( {type: 'message', channel: this.state.channel, message: message} ))
         }
     }
@@ -35,7 +34,7 @@ class ChatApp extends React.Component {
         const actions = {
             'message': (msg) => {
                 if (msg.message && msg.channel && msg.user)
-                    this.receive(msg.message, msg.channel, msg.sender)
+                    this.receive(msg.message, msg.channel, msg.user)
             },
             'channels': (msg) => {
                 console.log(JSON.stringify(msg))
@@ -45,13 +44,18 @@ class ChatApp extends React.Component {
                     subscribed[ch] =  this.state.subscribed[ch] || ''
                 })
                 this.setState({ subscribed: subscribed })
+            },
+            'username': (msg) => {
+                if (msg.username)
+                    this.setState( { username: msg.username } )
             }
         }
         return actions[message.type](message)
     }
 
     receive(message, channel, sender) {
-        const user = this.props.username === sender ? "you" : sender
+        console.log(sender + ' and user: ' + this.state.username)
+        const user = this.state.username === sender ? "you" : sender
         if (channel === this.state.channel) {
             this.setState({messages: this.state.messages.concat({user: user, message: message})})
         }
@@ -72,7 +76,6 @@ class ChatApp extends React.Component {
             subscribed: newSubscribed,
             channel: null
         })
-        console.log('unsubbing: ' + channel)
     }
 
     subscribe(channel) {
@@ -90,7 +93,7 @@ class ChatApp extends React.Component {
             this.setState( { channel: null } )
         else
             this.setState( { channel: channel } )
-        // Empty messages when chaning channel
+        // Empty messages when changing channel
         this.setState( { messages: []} )
     }
 
@@ -99,6 +102,7 @@ class ChatApp extends React.Component {
 
         return (
             <div className="row">
+                Username: {this.state.username}
                 <div className="col-xs-4">
                     <div><ChannelList notSubscribed={this.state.notSubscribed}
                                       subscribed={this.state.subscribed} channelInFocus={this.state.channel}
@@ -151,20 +155,20 @@ class ChatMessage extends React.Component {
 
 class MessageBox extends React.Component {
     constructor(props) {
-        super(props);
-        this.state = {value: ''};
+        super(props)
+        this.state = {value: ''}
 
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleChange = this.handleChange.bind(this)
+        this.handleSubmit = this.handleSubmit.bind(this)
     }
 
     handleChange(event) {
-        this.setState({value: event.target.value});
+        this.setState({value: event.target.value})
     }
 
     handleSubmit(event) {
-        event.preventDefault();
-        this.props.sendMessage(this.state.value);
+        event.preventDefault()
+        this.props.sendMessage(this.state.value)
         this.setState( { value: '' } )
     }
 
@@ -177,26 +181,26 @@ class MessageBox extends React.Component {
                 </label>
                 <input type="submit" value="Submit" />
             </form>
-        );
+        )
     }
 }
 
 class ChannelList extends React.Component {
     constructor(props) {
-        super(props);
-        this.state = {value: ''};
+        super(props)
+        this.state = {value: ''}
 
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleChange = this.handleChange.bind(this)
+        this.handleSubmit = this.handleSubmit.bind(this)
     }
 
     handleChange(event) {
-        this.setState({value: event.target.value});
+        this.setState({value: event.target.value})
     }
 
     handleSubmit(event) {
-        event.preventDefault();
-        this.props.subscribe(this.state.value);
+        event.preventDefault()
+        this.props.subscribe(this.state.value)
         this.setState( { value: '' } )
     }
 
@@ -223,7 +227,6 @@ class ChannelList extends React.Component {
                 <strong>New channel</strong>
                 <form onSubmit={this.handleSubmit}>
                     <label>
-                        Name:
                         <input type="text" value={this.state.value} onChange={this.handleChange} />
                     </label>
                     <input type="submit" value="Submit" />
@@ -236,10 +239,10 @@ class ChannelList extends React.Component {
 
 class NotSubscribed extends React.Component {
     constructor(props) {
-        super(props);
+        super(props)
 
         // This binding is necessary to make `this` work in the callback
-        this.handleClick = this.handleClick.bind(this);
+        this.handleClick = this.handleClick.bind(this)
     }
 
     handleClick(event) {
@@ -256,17 +259,16 @@ class NotSubscribed extends React.Component {
 
 class Subscribed extends React.Component {
     constructor(props) {
-        super(props);
+        super(props)
 
         // This binding is necessary to make `this` work in the callback
-        this.focus = this.focus.bind(this);
+        this.focus = this.focus.bind(this)
     }
 
 
 
     focus() {
         this.props.focus(this.props.name)
-        console.log("focus")
     }
 
 
@@ -287,9 +289,9 @@ const element = (
         <h1 className="text-center">Chat app</h1>
         <ChatApp />
     </div>
-);
+)
 
 ReactDOM.render(
     element,
     document.getElementById('chat-app')
-);
+)
