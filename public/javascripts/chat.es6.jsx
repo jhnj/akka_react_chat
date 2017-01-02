@@ -103,10 +103,11 @@ class ChatApp extends React.Component {
         return (
             <div className="row">
                 <div className="col-xs-4">
-                    <div><ChannelList notSubscribed={this.state.notSubscribed}
-                                      subscribed={this.state.subscribed} channelInFocus={this.state.channel}
-                                      subscribe={this.subscribe} focus={this.focus}/></div>
+                    <ChannelList notSubscribed={this.state.notSubscribed}
+                                 subscribed={this.state.subscribed} channelInFocus={this.state.channel}
+                                 subscribe={this.subscribe} focus={this.focus}/>
                 </div>
+
                 <div className="col-xs-8">
                     <Chat channel={this.state.channel} unsubscribe={this.unsubscribe}
                           messages={this.state.messages} sendMessage={this.sendMessage}/>
@@ -128,7 +129,7 @@ class Chat extends React.Component {
                         </button>
 
                     </div>
-                    <div className="panel-body y-scroll">
+                    <div className="chat-body y-scroll">
                         <MessageList data={this.props.messages}/>
                     </div>
                     <div className="panel-footer">
@@ -142,10 +143,7 @@ class Chat extends React.Component {
                     <div className="panel-heading">
                         Select a channel
                     </div>
-                    <div className="panel-body">
-                    </div>
-                    <div className="panel-footer">
-
+                    <div className="chat-body">
                     </div>
                 </div>
             )
@@ -277,10 +275,14 @@ class ChannelList extends React.Component {
                     </form>
 
                 </div>
-                <div className="panel-body y-scroll">
-                    {subscribed}{notSubscribed}
-                </div>
-                <div className="panel-footer">
+                <div className="chat-body y-scroll">
+                    <div className="list-group">
+                        {subscribed}
+                    </div>
+                    <div className="list-group">
+                        <div className="list-group-item active">Not subscribed</div>
+                        {notSubscribed}
+                    </div>
                 </div>
             </div>
         )
@@ -300,10 +302,12 @@ class NotSubscribed extends React.Component {
     }
 
     render() {
-        return <div className="panel panel-default">
-            {this.props.name}
-            <button onClick={this.handleClick}>Subscribe</button>
-        </div>
+        return (
+            <li className="list-group-item">
+                {this.props.name}
+                <button className="btn btn-xs pull-right" onClick={this.handleClick}>Subscribe</button>
+            </li>
+        )
     }
 }
 
@@ -321,15 +325,24 @@ class Subscribed extends React.Component {
         this.props.focus(this.props.name)
     }
 
+    lastMessage() {
+        if (this.props.user) {
+            return (
+                <div>{this.props.user}: {this.props.lastMessage} </div>
+            )
+        } else {
+            return <div>No messages</div>
+        }
+    }
+
 
     render() {
-        const lastMessage = <div>{this.props.user}: {this.props.lastMessage} </div>
-
         return (
-            <div onClick={this.focus} className={(this.props.isInFocus ? "focus" : "") + ' panel panel-default'}>
+            <button type="button" onClick={this.focus}
+                    className={(this.props.isInFocus ? "active-chat" : "") + ' list-group-item'}>
                 <strong>{this.props.name}</strong><br/>
-                {this.props.user && lastMessage}
-            </div>
+                {this.lastMessage()}
+            </button>
         )
     }
 }
