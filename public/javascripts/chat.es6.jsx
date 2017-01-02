@@ -34,7 +34,8 @@ class ChatApp extends React.Component {
     handle(message) {
         const actions = {
             'message': (msg) => {
-                this.receive(msg.message, msg.channel, msg.user)
+                if (msg.message && msg.channel && msg.user)
+                    this.receive(msg.message, msg.channel, msg.user)
             },
             'channels': (msg) => {
                 console.log(JSON.stringify(msg))
@@ -51,12 +52,12 @@ class ChatApp extends React.Component {
 
     receive(message, channel, user) {
         if (channel === this.state.channel) {
-            this.setState({ messages: this.state.messages.concat( {user: user, message: message } )})
-        } else {
-            const tempSubscribed = this.state.subscribed
-            tempSubscribed[channel] = {user: user, message: message}
-            this.setState({ subscribed: tempSubscribed})
+            this.setState({messages: this.state.messages.concat({user: user, message: message})})
         }
+        const tempSubscribed = this.state.subscribed
+        tempSubscribed[channel] = {user: user, message: message}
+        this.setState({subscribed: tempSubscribed})
+
     }
 
     unsubscribe() {
@@ -76,7 +77,7 @@ class ChatApp extends React.Component {
     subscribe(channel) {
         this.socket.send(JSON.stringify( { type: "subscribe", channel: channel} ))
         const newSubscribed = this.state.subscribed
-        newSubscribed[channel] = {user: "", message: ""}
+        newSubscribed[channel] = {user: null, message: ""}
         this.setState( {
             notSubscribed: this.state.notSubscribed.filter((ch) => ch !== channel),
             subscribed: newSubscribed
@@ -85,7 +86,7 @@ class ChatApp extends React.Component {
 
     focus(channel) {
         if (this.state.channel === channel)
-            this.setState({channel: ""})
+            this.setState({channel: null})
         else
             this.setState({channel: channel})
     }
@@ -236,11 +237,14 @@ class Subscribed extends React.Component {
         console.log("focus")
     }
 
+
     render() {
+        const lastMessage = <div>{this.props.user}: {this.props.lastMessage} </div>
+
         return (
             <div onClick={this.focus} className={(this.props.isInFocus ? "focus" : "") + ' panel panel-default'}>
                 <strong>{this.props.name}</strong><br/>
-                {this.props.user}: {this.props.lastMessage}
+                {this.props.user && lastMessage}
             </div>
         )
     }
