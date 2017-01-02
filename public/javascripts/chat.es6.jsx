@@ -120,10 +120,21 @@ class Chat extends React.Component {
         if (this.props.channel) {
             return (
                 <div className="col-xs-8">
-                    <h3>{this.props.channel}</h3>
-                    <button onClick={this.props.unsubscribe}>Unsubscribe</button>
-                    <div><MessageList data={this.props.messages}/></div>
-                    <div><MessageBox sendMessage={this.props.sendMessage}/></div>
+                    <div className="panel panel-primary">
+                        <div className="panel-heading">
+                            {this.props.channel}
+                            <button className="btn pull-right btn-default btn-xs" onClick={this.props.unsubscribe}>
+                                Unsubscribe
+                            </button>
+
+                        </div>
+                        <div className="panel-body">
+                            <MessageList data={this.props.messages}/>
+                        </div>
+                        <div className="panel-footer">
+                            <MessageBox sendMessage={this.props.sendMessage}/>
+                        </div>
+                    </div>
                 </div>
             )
         } else {
@@ -136,18 +147,33 @@ class Chat extends React.Component {
 class MessageList extends React.Component {
     render() {
         const msgNodes = this.props.data.map((msg, i) => {
-            return <ChatMessage user={msg.user} message={msg.message} key={i.toString()}/>
+            return (
+                <li className="right clearfix" key={i.toString()}>
+                    <ChatMessage user={msg.user} message={msg.message} />
+                </li>
+            )
         })
-        return <div id="chat">{msgNodes}</div>
+        return (
+            <ul className="message-list">
+                {msgNodes}
+            </ul>
+        )
     }
 }
 
 class ChatMessage extends React.Component {
     render() {
         return (
-            <div className="">
-                <strong>{this.props.user}: </strong>
-                {this.props.message}
+            <div className="chat-body clearfix">
+                <div className="header">
+                    <strong className="primary-font">{this.props.user}</strong>
+                    {/*<small className="text-muted pull-right">*/}
+                        {/*<span className="glyphicon glyphicon-time"/>12 mins ago*/}
+                    {/*</small>*/}
+                </div>
+                <p>
+                    {this.props.message}
+                </p>
             </div>
         )
     }
@@ -175,12 +201,15 @@ class MessageBox extends React.Component {
     render() {
 
         return (
-            <form onSubmit={this.handleSubmit}>
-                <label>
-                    <input type="text" value={this.state.value} onChange={this.handleChange} />
-                </label>
-                <input type="submit" value="Submit" />
-            </form>
+
+        <form onSubmit={this.handleSubmit} className="input-group">
+            <input id="btn-input" type="text" className="form-control input-sm" placeholder="Type your message here..."
+                   value={this.state.value} onChange={this.handleChange}/>
+            <span className="input-group-btn">
+            <button className="btn btn-warning btn-sm" id="btn-chat" type="submit">
+              Send</button>
+          </span>
+        </form>
         )
     }
 }

@@ -2,3 +2,41 @@
 .focus {
     background-color: aqua !important;
 }
+
+.message-list
+{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.message-list li
+{
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px dotted #B3A9A9;
+}
+
+.message-list li.left .chat-body
+{
+    margin-left: 60px;
+}
+
+.message-list li.right .chat-body
+{
+    margin-right: 60px;
+}
+
+
+.message-list li .chat-body p
+{
+    margin: 0;
+    color: #777777;
+}
+
+
+.panel-body
+{
+    overflow-y: scroll;
+    height: 400px;
+}
