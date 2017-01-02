@@ -1,5 +1,6 @@
 /* channel in focus */
-.active-chat {
+.active-chat
+{
     background-color: #5bc0de !important;
 }
 
@@ -35,7 +36,7 @@
 }
 
 
-.chat-body
+.main-chat
 {
     height: 400px;
 }

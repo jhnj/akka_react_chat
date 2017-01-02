@@ -129,7 +129,7 @@ class Chat extends React.Component {
                         </button>
 
                     </div>
-                    <div className="chat-body y-scroll">
+                    <div className="main-chat y-scroll panel-body">
                         <MessageList data={this.props.messages}/>
                     </div>
                     <div className="panel-footer">
@@ -143,7 +143,7 @@ class Chat extends React.Component {
                     <div className="panel-heading">
                         Select a channel
                     </div>
-                    <div className="chat-body">
+                    <div className="main-chat panel-body">
                     </div>
                 </div>
             )
@@ -275,7 +275,7 @@ class ChannelList extends React.Component {
                     </form>
 
                 </div>
-                <div className="chat-body y-scroll">
+                <div className="main-chat y-scroll panel-body">
                     <div className="list-group">
                         {subscribed}
                     </div>
