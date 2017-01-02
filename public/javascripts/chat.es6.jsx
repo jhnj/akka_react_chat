@@ -102,14 +102,15 @@ class ChatApp extends React.Component {
 
         return (
             <div className="row">
-                Username: {this.state.username}
                 <div className="col-xs-4">
                     <div><ChannelList notSubscribed={this.state.notSubscribed}
                                       subscribed={this.state.subscribed} channelInFocus={this.state.channel}
                                       subscribe={this.subscribe} focus={this.focus}/></div>
                 </div>
-                <Chat channel={this.state.channel} unsubscribe={this.unsubscribe}
-                      messages={this.state.messages} sendMessage={this.sendMessage} />
+                <div className="col-xs-8">
+                    <Chat channel={this.state.channel} unsubscribe={this.unsubscribe}
+                          messages={this.state.messages} sendMessage={this.sendMessage}/>
+                </div>
             </div>
         )
     }
@@ -119,26 +120,35 @@ class Chat extends React.Component {
     render() {
         if (this.props.channel) {
             return (
-                <div className="col-xs-8">
-                    <div className="panel panel-primary">
-                        <div className="panel-heading">
-                            {this.props.channel}
-                            <button className="btn pull-right btn-default btn-xs" onClick={this.props.unsubscribe}>
-                                Unsubscribe
-                            </button>
+                <div className="panel panel-primary">
+                    <div className="panel-heading">
+                        {this.props.channel}
+                        <button className="btn pull-right btn-default btn-xs" onClick={this.props.unsubscribe}>
+                            Unsubscribe
+                        </button>
 
-                        </div>
-                        <div className="panel-body">
-                            <MessageList data={this.props.messages}/>
-                        </div>
-                        <div className="panel-footer">
-                            <MessageBox sendMessage={this.props.sendMessage}/>
-                        </div>
+                    </div>
+                    <div className="panel-body y-scroll">
+                        <MessageList data={this.props.messages}/>
+                    </div>
+                    <div className="panel-footer">
+                        <MessageBox sendMessage={this.props.sendMessage}/>
                     </div>
                 </div>
             )
         } else {
-            return <div>Select a channel</div>
+            return (
+                <div className="panel panel-primary">
+                    <div className="panel-heading">
+                        Select a channel
+                    </div>
+                    <div className="panel-body">
+                    </div>
+                    <div className="panel-footer">
+
+                    </div>
+                </div>
+            )
         }
 
     }
@@ -251,16 +261,27 @@ class ChannelList extends React.Component {
                     chs.unshift(channel)
                 return chs
             }, [])
+
+
         return (
-            <div>
-                <strong>New channel</strong>
-                <form onSubmit={this.handleSubmit}>
-                    <label>
-                        <input type="text" value={this.state.value} onChange={this.handleChange} />
-                    </label>
-                    <input type="submit" value="Submit" />
-                </form>
-                <div>{subscribed}{notSubscribed}</div>
+            <div className="panel panel-primary">
+                <div className="panel-heading">
+                    <form onSubmit={this.handleSubmit} className="input-group">
+                        <input id="btn-input" type="text" className="form-control input-sm" placeholder="New channel"
+                               value={this.state.value} onChange={this.handleChange}/>
+                        <span className="input-group-btn">
+                        <button type="submit" id="btn-chat" className="btn btn-default btn-sm">
+                            <span className="glyphicon glyphicon-plus" aria-hidden="true"/>
+                        </button>
+                        </span>
+                    </form>
+
+                </div>
+                <div className="panel-body y-scroll">
+                    {subscribed}{notSubscribed}
+                </div>
+                <div className="panel-footer">
+                </div>
             </div>
         )
     }

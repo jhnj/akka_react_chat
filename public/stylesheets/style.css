@@ -37,6 +37,10 @@
 
 .panel-body
 {
-    overflow-y: scroll;
     height: 400px;
+}
+
+.y-scroll
+{
+    overflow-y: scroll;
 }
