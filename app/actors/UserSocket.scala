@@ -11,12 +11,9 @@ import play.api.libs.json._
   */
 class UserSocket(out: ActorRef, chat: ActorRef, uid: String) extends Actor{
 
-  chat ! Subscribe("sub2", self)
-  chat ! Subscribe("notS", self)
-  chat ! Subscribe("sub1", self)
-  var channels: Set[String] = Set("sub2", "sub1")
-  chat ! NewUser
-  chat ! Publish("sub1", "notfocus")
+
+  var channels: Set[String] = Set()
+  chat ! NewUser(uid)
 
   def receive: PartialFunction[Any, Unit] = {
     case js: JsValue =>
@@ -27,14 +24,14 @@ class UserSocket(out: ActorRef, chat: ActorRef, uid: String) extends Actor{
             .foreach { ch =>
               // Subscribe to new channel
               channels += ch
-              chat ! Subscribe(ch, self)
+              chat ! Subscribe(ch, uid)
             }
 
         case "unsubscribe" =>
           (js \ "channel").asOpt[String]
             .foreach { ch =>
               channels -= ch
-              chat ! UnSubscribe(ch, self)
+              chat ! UnSubscribe(ch, uid)
             }
         // Sent message received from client
         case "message" =>
@@ -51,7 +48,11 @@ class UserSocket(out: ActorRef, chat: ActorRef, uid: String) extends Actor{
       val notSubscribed = chs.channels.filter(!this.channels.contains(_))
       out ! Json.toJson(ClientChannels(channels, notSubscribed))
 
+    case subCh: SubscribedChannels =>
+      channels = subCh.channels.toSet
   }
+
+  override def postStop(): Unit = chat ! Disconnected(uid)
 }
 
 

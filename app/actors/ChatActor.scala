@@ -2,7 +2,7 @@ package actors
 
 import actors.ChatActor._
 import actors.UserSocket.{ClientChannels, ClientMessage}
-import akka.actor.{Actor, ActorRef, Props, Terminated}
+import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
 
 /**
   * Created by johan on 26/12/16.
@@ -12,34 +12,37 @@ import akka.actor.{Actor, ActorRef, Props, Terminated}
   * prop method to create a ChatRoom actor
   */
 object ChatActor {
-  case object NewUser
+  case class NewUser(uid: String)
 
   case class Publish(channel: String, message: String, user: Option[String] = None)
   case class Published(publish: Publish)
 
-  case class Subscribe(channel: String, subscriber: ActorRef)
+  case class Subscribe(channel: String, subscriber: String)
   case class Subscribed(subscribe: Subscribe)
   case class AlreadySubscribed(subscribe: Subscribe)
 
-  case class UnSubscribe(channel: String, subscriber: ActorRef)
+  case class UnSubscribe(channel: String, subscriber: String)
   case class UnSubscribed(unSubscribe: UnSubscribe)
   case class NotSubscribed(unSubscribe: UnSubscribe)
 
   case class GetSubscribers(channel: String)
   case class ChannelList(channels: Seq[String])
+  case class SubscribedChannels(channels: Seq[String])
+
+  case class Disconnected(uid: String)
 
   def props = Props(new ChatActor)
 }
 
-class ChatActor extends Actor {
+class ChatActor extends Actor with ActorLogging {
 
-  private var channels = Map[String, Set[ActorRef]]().withDefaultValue(Set.empty)
-  private var users: Set[ActorRef] = Set[ActorRef]()
+  private var channels = Map[String, Set[String]]().withDefaultValue(Set.empty)
+  private var users: Map[String, ActorRef] = Map()
 
   def receive: PartialFunction[Any, Unit] = {
     case p @ Publish(channel, message, user) =>
       channels(channel).foreach(c => {
-        c ! ClientMessage(message, user.getOrElse("system"), channel)
+        users.get(c).foreach(_ ! ClientMessage(message, user.getOrElse("system"), channel))
       })
       sender() ! Published(p)
 
@@ -49,11 +52,10 @@ class ChatActor extends Actor {
     case s @ Subscribe(channel, subscriber) =>
       if (!channels.contains(channel)) {
         channels += channel -> (channels(channel) + subscriber)
-        users.foreach(u => u ! ChannelList(channels.keys.toSeq))
+        users.values.foreach(u => u ! ChannelList(channels.keys.toSeq))
       } else {
         channels += channel -> (channels(channel) + subscriber)
       }
-      context.watch(subscriber)
       sender() ! Subscribed(s)
 
     case us @ UnSubscribe(channel, subscriber) if !channels(channel).contains(subscriber) =>
@@ -66,15 +68,18 @@ class ChatActor extends Actor {
     case  GetSubscribers(channel) =>
       sender() ! channels(channel)
 
-    case Terminated(subscriber) =>
-      users -= subscriber
-      channels.map {
-        case (channel, subscribers) => channel -> (subscribers - subscriber)
-      }
+    case Disconnected(uid) =>
+      users = users - uid
 
-    case NewUser =>
+    case NewUser(uid) =>
+      val subscribedChannels = channels.keys.foldLeft[Seq[String]](Seq())((subscribed, ch) => {
+        if (channels(ch).contains(uid)) {
+          subscribed :+ ch
+        } else subscribed
+      })
+      sender() ! SubscribedChannels(subscribedChannels)
       sender() ! ChannelList(channels.keys.toSeq)
-      users += sender()
+      users += uid -> sender()
   }
 
 }

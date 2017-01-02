@@ -3,11 +3,11 @@ class ChatApp extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            messages: [{user: "user1", message: "message1"}, {user: "user2", message: "message2"}],
+            messages: [],
             username: "username",
             channel: null,
             notSubscribed: [],
-            subscribed: {sub1: {user: "u1", message: "lmsg1"}, sub2: {user: "u2", message: "lmsg2"}}
+            subscribed: {}//sub1: {user: "u1", message: "lmsg1"}, sub2: {user: "u2", message: "lmsg2"}}
         }
 
         this.handle = this.handle.bind(this)
