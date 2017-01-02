@@ -1,8 +1,8 @@
 package actors
 
 import actors.ChatActor._
-import actors.UserSocket.{ClientChannels, ClientMessage}
-import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
+import actors.UserSocket.{ClientMessage}
+import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 
 /**
   * Created by johan on 26/12/16.

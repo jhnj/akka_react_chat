@@ -76,8 +76,8 @@ object UserSocket {
     override def writes(chs: ClientChannels): JsObject = {
       Json.obj(
         "type" -> "channels",
-        "subscribed" -> chs.subscribed.map(JsString(_)),
-        "notSubscribed" -> chs.notSubscribed.map(JsString(_))
+        "subscribed" -> chs.subscribed.map(JsString),
+        "notSubscribed" -> chs.notSubscribed.map(JsString)
       )
     }
   }
