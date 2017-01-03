@@ -349,7 +349,14 @@ class Subscribed extends React.Component {
 
 const element = (
     <div className="container">
-        <h1 className="text-center">Chat app</h1>
+        <div className="main-header header clearfix">
+                <nav>
+                    <ul className="nav nav-pills pull-right">
+                        <li role="presentation"><a href="/logout" className="btn btn-default">logout</a></li>
+                    </ul>
+                </nav>
+                <h2 className="text-muted">Chat app</h2>
+        </div>
         <ChatApp />
     </div>
 )

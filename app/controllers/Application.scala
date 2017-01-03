@@ -52,7 +52,7 @@ class Application @Inject()(webJarAssets: WebJarAssets, system: ActorSystem, mat
 
   def index: Action[AnyContent] = Action { implicit req =>
     req.session.get("userName").map ( user =>
-      Ok(views.html.chat(webJarAssets)(user))
+      Ok(views.html.react_chat(webJarAssets))
     ).getOrElse(Redirect(routes.Application.login()))
   }
 
@@ -65,8 +65,5 @@ class Application @Inject()(webJarAssets: WebJarAssets, system: ActorSystem, mat
 
   }
 
-  def test = Action { implicit req =>
-    Ok(views.html.react_chat(webJarAssets)("dank"))
-  }
 
 }

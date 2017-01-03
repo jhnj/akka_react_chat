@@ -45,3 +45,29 @@
 {
     overflow-y: scroll;
 }
+
+.main-header
+{
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+.main-header
+{
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e5e5e5;
+    margin-bottom: 20px;
+}
+.main-header h2
+{
+    margin-top: 0;
+    margin-bottom: 0;
+    line-height: 40px;
+}
+/* Space out content a bit */
+body
+{
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
