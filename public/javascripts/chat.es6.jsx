@@ -18,7 +18,7 @@ class ChatApp extends React.Component {
     }
 
     componentDidMount() {
-        const wsUrl = $('body').data('websocket_url')
+        const wsUrl = 'ws://' + window.location.host + '/socket'
         this.socket = new WebSocket(wsUrl)
         this.socket.onmessage = (event) => {
             console.log(event)
