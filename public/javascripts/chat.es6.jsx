@@ -210,9 +210,9 @@ class MessageBox extends React.Component {
 
         return (
 
-        <form onSubmit={this.handleSubmit} className="input-group">
+        <form onSubmit={this.handleSubmit} className="input-group" autoComplete="off">
             <input id="btn-input" type="text" className="form-control input-sm" placeholder="Type your message here..."
-                   value={this.state.value} onChange={this.handleChange}/>
+                   value={this.state.value} onChange={this.handleChange} autoFocus/>
             <span className="input-group-btn">
             <button className="btn btn-warning btn-sm" id="btn-chat" type="submit">
               Send</button>
@@ -244,9 +244,18 @@ class ChannelList extends React.Component {
 
     render() {
 
-        const notSubscribed = this.props.notSubscribed.map((ns) => {
+        let notSubscribed = this.props.notSubscribed.map((ns) => {
             return <NotSubscribed name={ns} key={ns} subscribe={this.props.subscribe}/>
         })
+
+        if (notSubscribed.length > 0) {
+            notSubscribed = (
+                <div className="list-group">
+                    <div className="list-group-item active">Not subscribed</div>
+                    {notSubscribed}
+                </div>
+            )
+        }
 
 
         const subscribed = Object.keys(this.props.subscribed).reduce((chs, name) => {
@@ -279,10 +288,7 @@ class ChannelList extends React.Component {
                     <div className="list-group">
                         {subscribed}
                     </div>
-                    <div className="list-group">
-                        <div className="list-group-item active">Not subscribed</div>
-                        {notSubscribed}
-                    </div>
+                    {notSubscribed}
                 </div>
             </div>
         )

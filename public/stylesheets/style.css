@@ -71,3 +71,9 @@ body
     padding-bottom: 20px;
 }
 
+.form-signin input[type="text"] {
+    margin-bottom: 10px;
+}
+
+
+
