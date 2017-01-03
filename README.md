@@ -10,5 +10,6 @@ To run the the play application you need
 When you have activator installed do `$ activator run` and the application will be started listening on port 9000.
 
 ### ToDo
+* Server side JSX transpiling and React pre-rendering
 * Store the messages in a database to view old messages
 * Add some kind of login and authentication
