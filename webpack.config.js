@@ -2,7 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 
 const BUILD_DIR = path.resolve(__dirname, 'public')
-const APP_DIR = path.resolve(__dirname, 'public/javascripts')
+const APP_DIR = path.resolve(__dirname, 'app/assets/javascripts')
 
 const config = {
   entry: APP_DIR + '/chat.es6.jsx',
