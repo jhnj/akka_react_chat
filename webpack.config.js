@@ -5,7 +5,7 @@ const BUILD_DIR = path.resolve(__dirname, 'public')
 const APP_DIR = path.resolve(__dirname, 'app/assets/javascripts')
 
 const config = {
-  entry: APP_DIR + '/chat.es6.jsx',
+  entry: APP_DIR + '/chatApp.jsx',
   output: {
     path: BUILD_DIR,
     filename: 'bundle.js',
