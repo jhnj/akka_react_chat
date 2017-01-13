@@ -1,3 +1,5 @@
+import React from 'react';
+import {render} from 'react-dom';
 
 class ChatApp extends React.Component {
     constructor(props) {
@@ -367,7 +369,7 @@ const element = (
     </div>
 )
 
-ReactDOM.render(
+render(
     element,
     document.getElementById('chat-app')
 )

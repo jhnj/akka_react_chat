@@ -8,3 +8,7 @@ target
 /.project
 /.settings
 /RUNNING_PID
+node_modules
+bundle.js
+bundle.min.js
+bundle.js.map
