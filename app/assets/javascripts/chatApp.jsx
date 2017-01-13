@@ -1,8 +1,8 @@
 import React from 'react';
-import {render} from 'react-dom';
+import ReactDOM from 'react-dom';
+import ReactDOMServer from 'react-dom/server'
 import ChannelList from './channelList.jsx'
 import Chat from './chat.jsx'
-import MessageList from './messageList.jsx'
 
 class ChatApp extends React.Component {
     constructor(props) {
@@ -122,241 +122,6 @@ class ChatApp extends React.Component {
     }
 }
 
-// class Chat extends React.Component {
-//     render() {
-//         if (this.props.channel) {
-//             return (
-//                 <div className="panel panel-primary">
-//                     <div className="panel-heading">
-//                         {this.props.channel}
-//                         <button className="btn pull-right btn-default btn-xs" onClick={this.props.unsubscribe}>
-//                             Unsubscribe
-//                         </button>
-//
-//                     </div>
-//                     <div className="main-chat y-scroll panel-body">
-//                         <MessageList data={this.props.messages}/>
-//                     </div>
-//                     <div className="panel-footer">
-//                         <MessageBox sendMessage={this.props.sendMessage}/>
-//                     </div>
-//                 </div>
-//             )
-//         } else {
-//             return (
-//                 <div className="panel panel-primary">
-//                     <div className="panel-heading">
-//                         Select a channel
-//                     </div>
-//                     <div className="main-chat panel-body">
-//                     </div>
-//                 </div>
-//             )
-//         }
-//
-//     }
-// }
-
-// class MessageList extends React.Component {
-//     render() {
-//         const msgNodes = this.props.data.map((msg, i) => {
-//             return (
-//                 <li className="right clearfix" key={i.toString()}>
-//                     <ChatMessage user={msg.user} message={msg.message} />
-//                 </li>
-//             )
-//         })
-//         return (
-//             <ul className="message-list">
-//                 {msgNodes}
-//             </ul>
-//         )
-//     }
-// }
-//
-// class ChatMessage extends React.Component {
-//     render() {
-//         return (
-//             <div className="chat-body clearfix">
-//                 <div className="header">
-//                     <strong className="primary-font">{this.props.user}</strong>
-//                     {/*<small className="text-muted pull-right">*/}
-//                         {/*<span className="glyphicon glyphicon-time"/>12 mins ago*/}
-//                     {/*</small>*/}
-//                 </div>
-//                 <p>
-//                     {this.props.message}
-//                 </p>
-//             </div>
-//         )
-//     }
-// }
-//
-// class MessageBox extends React.Component {
-//     constructor(props) {
-//         super(props)
-//         this.state = {value: ''}
-//
-//         this.handleChange = this.handleChange.bind(this)
-//         this.handleSubmit = this.handleSubmit.bind(this)
-//     }
-//
-//     handleChange(event) {
-//         this.setState({value: event.target.value})
-//     }
-//
-//     handleSubmit(event) {
-//         event.preventDefault()
-//         this.props.sendMessage(this.state.value)
-//         this.setState( { value: '' } )
-//     }
-//
-//     render() {
-//
-//         return (
-//
-//         <form onSubmit={this.handleSubmit} className="input-group" autoComplete="off">
-//             <input id="btn-input" type="text" className="form-control input-sm" placeholder="Type your message here..."
-//                    value={this.state.value} onChange={this.handleChange} autoFocus/>
-//             <span className="input-group-btn">
-//             <button className="btn btn-warning btn-sm" id="btn-chat" type="submit">
-//               Send</button>
-//           </span>
-//         </form>
-//         )
-//     }
-// }
-
-// class ChannelList extends React.Component {
-//     constructor(props) {
-//         super(props)
-//         this.state = {value: ''}
-//
-//         this.handleChange = this.handleChange.bind(this)
-//         this.handleSubmit = this.handleSubmit.bind(this)
-//     }
-//
-//     handleChange(event) {
-//         this.setState({value: event.target.value})
-//     }
-//
-//     handleSubmit(event) {
-//         event.preventDefault()
-//         this.props.subscribe(this.state.value)
-//         this.setState( { value: '' } )
-//     }
-//
-//
-//     render() {
-//
-//         let notSubscribed = this.props.notSubscribed.map((ns) => {
-//             return <NotSubscribed name={ns} key={ns} subscribe={this.props.subscribe}/>
-//         })
-//
-//         if (notSubscribed.length > 0) {
-//             notSubscribed = (
-//                 <div className="list-group">
-//                     <div className="list-group-item active">Not subscribed</div>
-//                     {notSubscribed}
-//                 </div>
-//             )
-//         }
-//
-//
-//         const subscribed = Object.keys(this.props.subscribed).reduce((chs, name) => {
-//                 const channel = <Subscribed name={name} lastMessage={this.props.subscribed[name].message}
-//                                             user={this.props.subscribed[name].user} isInFocus={this.props.channelInFocus == name}
-//                                             focus={this.props.focus} key={name}/>
-//                 if (name != this.props.channelInFocus)
-//                     chs.push(channel)
-//                 else
-//                     chs.unshift(channel)
-//                 return chs
-//             }, [])
-//
-//
-//         return (
-//             <div className="panel panel-primary">
-//                 <div className="panel-heading">
-//                     <form onSubmit={this.handleSubmit} className="input-group">
-//                         <input id="btn-input" type="text" className="form-control input-sm" placeholder="New channel"
-//                                value={this.state.value} onChange={this.handleChange}/>
-//                         <span className="input-group-btn">
-//                         <button type="submit" id="btn-chat" className="btn btn-default btn-sm">
-//                             <span className="glyphicon glyphicon-plus" aria-hidden="true"/>
-//                         </button>
-//                         </span>
-//                     </form>
-//
-//                 </div>
-//                 <div className="main-chat y-scroll panel-body">
-//                     <div className="list-group">
-//                         {subscribed}
-//                     </div>
-//                     {notSubscribed}
-//                 </div>
-//             </div>
-//         )
-//     }
-// }
-//
-// class NotSubscribed extends React.Component {
-//     constructor(props) {
-//         super(props)
-//
-//         // This binding is necessary to make `this` work in the callback
-//         this.handleClick = this.handleClick.bind(this)
-//     }
-//
-//     handleClick(event) {
-//         this.props.subscribe(this.props.name)
-//     }
-//
-//     render() {
-//         return (
-//             <li className="list-group-item">
-//                 {this.props.name}
-//                 <button className="btn btn-xs pull-right" onClick={this.handleClick}>Subscribe</button>
-//             </li>
-//         )
-//     }
-// }
-//
-// class Subscribed extends React.Component {
-//     constructor(props) {
-//         super(props)
-//
-//         // This binding is necessary to make `this` work in the callback
-//         this.focus = this.focus.bind(this)
-//     }
-//
-//
-//
-//     focus() {
-//         this.props.focus(this.props.name)
-//     }
-//
-//     lastMessage() {
-//         if (this.props.user) {
-//             return (
-//                 <div>{this.props.user}: {this.props.lastMessage} </div>
-//             )
-//         } else {
-//             return <div>No messages</div>
-//         }
-//     }
-//
-//
-//     render() {
-//         return (
-//             <button type="button" onClick={this.focus}
-//                     className={(this.props.isInFocus ? "active-chat" : "") + ' list-group-item'}>
-//                 <strong>{this.props.name}</strong><br/>
-//                 {this.lastMessage()}
-//             </button>
-//         )
-//     }
-// }
 
 const element = (
     <div className="container">
@@ -372,7 +137,19 @@ const element = (
     </div>
 )
 
-render(
-    element,
-    document.getElementById('chat-app')
-)
+
+function renderServer() {
+    return ReactDOMServer.renderToString(element)
+}
+
+function renderClient(location) {
+    return ReactDOM.render(
+        element,
+        location
+    )
+}
+
+module.exports = {
+    renderClient: renderClient,
+    renderServer: renderServer
+}

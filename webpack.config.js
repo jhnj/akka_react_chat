@@ -9,6 +9,8 @@ const config = {
   output: {
     path: BUILD_DIR,
     filename: 'bundle.js',
+    libraryTarget: 'var',
+    library: 'ChatApp'
   },
   module: {
     loaders: [
