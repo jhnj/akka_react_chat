@@ -6,7 +6,7 @@
 
   <div id="chat-app">@content</div>
 
-  <script src="@routes.Assets.versioned("bundle.js")" type="text/javascript"></script>
+  <script src="@routes.Assets.versioned("/javascripts/bundle.js")" type="text/javascript"></script>
   <script>
     ChatApp.renderClient(document.getElementById('chat-app'))
   </script>

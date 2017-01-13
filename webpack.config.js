@@ -1,7 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 
-const BUILD_DIR = path.resolve(__dirname, 'public')
+const BUILD_DIR = path.resolve(__dirname, 'public/javascripts')
 const APP_DIR = path.resolve(__dirname, 'app/assets/javascripts')
 
 const config = {

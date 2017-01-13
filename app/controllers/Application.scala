@@ -8,6 +8,7 @@ import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.stream.Materializer
 import com.google.inject.{Inject, Singleton}
 import jdk.nashorn.api.scripting.NashornScriptEngine
+import play.api.Environment
 import play.api.data._
 import play.api.data.Forms._
 import play.api.libs.json.JsValue
@@ -19,7 +20,8 @@ import scala.concurrent.Future
 
 
 @Singleton
-class Application @Inject()(webJarAssets: WebJarAssets, system: ActorSystem, materializer: Materializer) extends Controller {
+class Application @Inject()(webJarAssets: WebJarAssets, system: ActorSystem, materializer: Materializer,
+                            environment: Environment) extends Controller {
 
   implicit val implicitSystem: ActorSystem = system
   implicit val implicitMaterializer: Materializer = materializer
@@ -73,7 +75,7 @@ class Application @Inject()(webJarAssets: WebJarAssets, system: ActorSystem, mat
         engine.eval("var console = {error: print, log: print, warn: print};")
 
         // Evaluate the application code
-        engine.eval(new FileReader("public/bundle.js"))
+        engine.eval(new FileReader(environment.getFile("public/javascripts/bundle.js")))
 
         Ok(views.html.react_chat(webJarAssets)(Html(engine.eval("ChatApp.renderServer()").toString)))
       }
