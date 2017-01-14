@@ -14,7 +14,7 @@
     "webpack": "^1.14.0"
   },
   "scripts": {
-    "dev": "webpack -d --watch",
-    "build" : "webpack -p"
+    "dev": "webpack -d --watch --progress --colors",
+    "build" : "webpack -p --config webpack.production.config.js --progress --colors"
   }
 }
