@@ -15,8 +15,13 @@ class ChannelList extends React.Component {
 
     handleSubmit(event) {
         event.preventDefault()
+
+        const channelName = this.state.value.trim()
+        if (!channelName)
+            return
+
         this.props.subscribe(this.state.value)
-        this.setState( { value: '' } )
+        this.setState({value: ''})
     }
 
 
@@ -38,7 +43,8 @@ class ChannelList extends React.Component {
 
         const subscribed = Object.keys(this.props.subscribed).reduce((chs, name) => {
             const channel = <Subscribed name={name} lastMessage={this.props.subscribed[name].message}
-                                        user={this.props.subscribed[name].user} isInFocus={this.props.channelInFocus == name}
+                                        user={this.props.subscribed[name].user}
+                                        isInFocus={this.props.channelInFocus == name}
                                         focus={this.props.focus} key={name}/>
             if (name != this.props.channelInFocus)
                 chs.push(channel)
@@ -52,7 +58,8 @@ class ChannelList extends React.Component {
             <div className="panel panel-primary">
                 <div className="panel-heading">
                     <form onSubmit={this.handleSubmit} className="input-group">
-                        <input id="btn-input" type="text" className="form-control input-sm" placeholder="New channel"
+                        <input id="btn-input" type="text" className="form-control input-sm"
+                               placeholder="New channel"
                                value={this.state.value} onChange={this.handleChange}/>
                         <span className="input-group-btn">
                         <button type="submit" id="btn-chat" className="btn btn-default btn-sm">
@@ -73,7 +80,8 @@ class ChannelList extends React.Component {
     }
 }
 
-class NotSubscribed extends React.Component {
+class NotSubscribed extends React
+    .Component {
     constructor(props) {
         super(props)
 
@@ -102,7 +110,6 @@ class Subscribed extends React.Component {
         // This binding is necessary to make `this` work in the callback
         this.focus = this.focus.bind(this)
     }
-
 
 
     focus() {

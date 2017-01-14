@@ -15,6 +15,10 @@ class MessageBox extends React.Component {
 
     handleSubmit(event) {
         event.preventDefault()
+        const message = this.state.value.trim()
+        if (!message)
+            return
+
         this.props.sendMessage(this.state.value)
         this.setState( { value: '' } )
     }
