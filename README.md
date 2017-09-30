@@ -1,7 +1,6 @@
 # Akka React Chat
 
-Simple chat app built using React.js, Scala Play and Akka Actors. 
-You can try it out at [Akka React Chat](http://ec2-54-93-90-85.eu-central-1.compute.amazonaws.com/)
+Simple chat app built using React.js, Scala Play and Akka Actors.
 
 React bundling and transpiling is done using webpack and serverside pre-rendering is done 
 using [Nashorn](http://openjdk.java.net/projects/nashorn/)
